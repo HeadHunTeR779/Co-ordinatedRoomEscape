@@ -21,6 +21,9 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
+
+	void OpenDoor();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	float OpenAngle = 90.0f;
@@ -28,5 +31,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate;
 		
-	
+	UPROPERTY(EditAnywhere)
+	AActor* ActorThatOpens;               //Remember that the pawn inherits from ACTOR class
+											//Though stated I don't think APawn will allow even chairs to open the door
 };
