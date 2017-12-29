@@ -23,15 +23,23 @@ public:
 
 
 	void OpenDoor(); 
+	void CloseDoor();
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	float OpenAngle = 90.0f;
+	UPROPERTY(EditAnywhere)
+	float OpenAngle = -90.0f;
 
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate;
+	
+	UPROPERTY(EditAnywhere)
+	float DoorCloseDelay = 0.25;
+
+	float LastDoorOpenTime;
 		
 	UPROPERTY(EditAnywhere)
 	AActor* ActorThatOpens;               //Remember that the pawn inherits from ACTOR class
 											//Though stated I don't think APawn will allow even chairs to open the door
+
+	AActor* Owner;
 };
