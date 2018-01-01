@@ -30,5 +30,8 @@ private:
 
 	//Ray-cast and Grab whats in reach
 	void Grab();
+
+	//Called when Grab is released
+	void Release();
 	
 };

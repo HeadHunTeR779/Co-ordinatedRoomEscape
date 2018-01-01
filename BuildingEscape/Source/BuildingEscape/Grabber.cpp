@@ -42,8 +42,12 @@ void UGrabber::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Input Component is found"));
 		///Bind the input axis
-		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);           //notice atthough Grab is a func I didn't use ()
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);           
+//in above when the assigned keys are PRESSED(see 2nd) of the mapping Grab(1st) , which causes the object(3rd) to do stuff 
+//	in the function whose ADDRESS is given by 4th, in 4th I am returning the address of the function Grab()
 
+
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
 	}
 	else
 	{
@@ -54,6 +58,11 @@ void UGrabber::BeginPlay()
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Pressed"));
+}
+
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab Released"));
 }
 
 
