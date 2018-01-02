@@ -41,5 +41,11 @@ private:
 	void SetupInputComponent();
 
 	//Return hit for first physics body in reach
-	FHitResult GetFirstPhysicsBodyInReach() const;
+	const FHitResult GetFirstPhysicsBodyInReach();
+
+	//Get the start of the ray-cast
+	FVector GetReachLineStart();
+
+	//Returns the end of the ray-cast
+	FVector GetReachLineEnd();
 };
