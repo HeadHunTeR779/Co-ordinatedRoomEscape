@@ -12,18 +12,18 @@ UGrabber::UGrabber()
 	// off to improve performance if you don't need them.
 	bWantsBeginPlay = true;
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 // Called when the game starts
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
+	FindPhysicsHandleComponent();
+	SetupInputComponent();
+}
 
-	UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty!"));
-
-
+void UGrabber::FindPhysicsHandleComponent()
+{
 	///Look for attached Physics Handle
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 
@@ -36,16 +36,19 @@ void UGrabber::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("%s missing Physics Handle Component"), *GetOwner()->GetName());
 	}
 
-	///Look for the Input component attached at (only appears at run-time)
+}
+
+///Look for the Input component attached at (only appears at run-time)
+void UGrabber::SetupInputComponent()
+{
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Input Component is found"));
 		///Bind the input axis
-		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);           
-//in above when the assigned keys are PRESSED(see 2nd) of the mapping Grab(1st) , which causes the object(3rd) to do stuff 
-//	in the function whose ADDRESS is given by 4th, in 4th I am returning the address of the function Grab()
-
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		//in above when the assigned keys are PRESSED(see 2nd) of the mapping Grab(1st) , which causes the object(3rd) to do stuff 
+		//	in the function whose ADDRESS is given by 4th, in 4th I am returning the address of the function Grab()
 
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
 	}
@@ -55,14 +58,23 @@ void UGrabber::BeginPlay()
 	}
 }
 
+
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Pressed"));
+
+	///line trace and see if we reach any actors with physics body collision channel set
+	GetFirstPhysicsBodyInReach();
+
+
+	///If we hit something then attach a physics handle
+		//TODO attach physics handle
 }
 
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Released"));
+	//TODO release physics handle
 }
 
 
@@ -71,20 +83,30 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
+	//if the physics handle is attached
+		//move the object that we're holding 
+
+		
+}
+
+
+FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
+{
 	
 	///Get Player's viewpoint this tick
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
 
-	
-	//TODO log out to test
+
+
 	/*UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation: %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString());*/
 
-	
-	///draw a red trace in the world to visualise
 	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
-	DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor(255, 0, 0), false, 0.f, 0, 10.f);
+
+	///draw a red trace in the world to visualise
+	//DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor(255, 0, 0), false, 0.f, 0, 10.f);
+
 
 	///Setup Qery parameters (For raycast below)
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
@@ -93,9 +115,9 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 	FHitResult Hit;
 	GetWorld()->LineTraceSingleByObjectType(
 		OUT Hit,
-		PlayerViewPointLocation, 
-		LineTraceEnd, 
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), 
+		PlayerViewPointLocation,
+		LineTraceEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParameters
 	);
 
@@ -106,6 +128,7 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Line Trace Hit: %s"), *(ActorHit->GetName()));
 	}
-	
+
+	return Hit;
 }
 
