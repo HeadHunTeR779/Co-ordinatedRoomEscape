@@ -3,6 +3,7 @@
 #include "BuildingEscape.h"
 #include "OpenDoor.h"
 
+#define OUT
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
@@ -21,7 +22,6 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 	Owner = GetOwner();
-	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 
@@ -31,13 +31,13 @@ void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompo
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
 	//Poll the trigger volume every frame
-	if (PressurePlate->IsOverlappingActor(ActorThatOpens))
+	if (GetTotalMassOfActorsOnPlate() > 50.f)	//TODO make into a parameter
 	{
-		//if the actor is in the trigger volume
 		OpenDoor();
 		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 	}
 
+	//Check if its time to close the door
 	if (GetWorld()->GetTimeSeconds() > LastDoorOpenTime + DoorCloseDelay)
 	{
 		CloseDoor();
@@ -56,5 +56,17 @@ void UOpenDoor::CloseDoor()
 	Owner->SetActorRotation(FRotator(0.0, 0.0, 0.0));
 }
 
+float UOpenDoor::GetTotalMassOfActorsOnPlate()
+{
+	float TotalMass = 0.f;
 
+	//Find all the actors on the pressure plate
+	TArray<AActor*> OverlappingActors;
+	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
+
+	//iterate adding their masses and storing them in TotalMass
+
+	return TotalMass;
+
+}
 

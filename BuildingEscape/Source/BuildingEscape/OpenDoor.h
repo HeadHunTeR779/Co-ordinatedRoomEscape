@@ -36,10 +36,10 @@ private:
 	float DoorCloseDelay = 0.25;
 
 	float LastDoorOpenTime;
-		
-	UPROPERTY(EditAnywhere)
-	AActor* ActorThatOpens;               //Remember that the pawn inherits from ACTOR class
-											//Though stated I don't think APawn will allow even chairs to open the door
 
-	AActor* Owner;
+	AActor* Owner;  //the owning door
+
+
+	//Returns total Mass in kg
+	float GetTotalMassOfActorsOnPlate();
 };
